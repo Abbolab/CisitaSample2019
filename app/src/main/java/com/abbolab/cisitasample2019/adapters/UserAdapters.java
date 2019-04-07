@@ -48,7 +48,7 @@ public class UserAdapters extends RecyclerView.Adapter<UserAdapters.ViewHolder> 
         User currentUser = dataSet.get(position);
 
         holder.textViewName.setText(currentUser.name + " " + currentUser.surname);
-        holder.textViewAge.setText(currentUser.dateRegistration.toString());
+        holder.textViewDate.setText(currentUser.dateRegistration.toString());
         holder.textViewAge.setText("Age: " + String.valueOf(currentUser.age)+ " - Pos: " + position);
     }
 

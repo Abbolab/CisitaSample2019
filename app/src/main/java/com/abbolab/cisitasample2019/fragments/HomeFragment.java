@@ -32,6 +32,8 @@ public class HomeFragment extends Fragment {
 
         // ottengo pulsante dalla view tramite ID
         final Button showList = (Button)view.findViewById(R.id.btnShowList);
+
+
         // resto in "ascolto" del click per l'evento a cui associare un'azione
         showList.setOnClickListener(new View.OnClickListener() {
             @Override

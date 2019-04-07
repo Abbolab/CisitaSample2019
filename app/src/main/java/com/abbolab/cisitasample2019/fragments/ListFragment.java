@@ -12,14 +12,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import com.abbolab.cisitasample2019.MainActivity;
 import com.abbolab.cisitasample2019.R;
 import com.abbolab.cisitasample2019.adapters.UserAdapters;
 import com.abbolab.cisitasample2019.model.User;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -47,7 +58,7 @@ public class ListFragment extends Fragment  {
 
 
         // eseguo download dei dati
-        //executeDownloadData();
+        executeDownloadData();
     }
 
     /***
@@ -63,6 +74,50 @@ public class ListFragment extends Fragment  {
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
                 Log.d("CISITA", "AsyncHTTPClient - onSuccess :-) !!!");
+
+                try {
+                    // converto array di bytes in stringa UTF-8
+                    String jsonString = new String(responseBody, "UTF-8"); // for UTF-8 encoding
+                    // converto stringa in oggetto JSONObject per la serializzazione
+                    JSONObject jsonObject = new JSONObject(jsonString);
+                    Log.d(MainActivity.K_TAG, "JSON Responde: " + jsonObject.toString());
+                    //Ottengo array di utenti
+                    JSONArray userArray = jsonObject.getJSONArray("users");
+
+                    // creo array list per l'aggiunta di oggetti creati dal parsing
+                    ArrayList<User> usersDataSet = new ArrayList<User>();
+
+                    //ciclo anagrafiche contenuti in JSON array
+                    for(int index=0; index < userArray.length(); index++) {
+                        // ottengo utente dal array tramite indice
+                        JSONObject jsonUser = userArray.getJSONObject(index);
+                        // istanzio nuovo oggetto User
+                        User user = new User();
+                        // mappo proprietà JSON nell'oggetto User
+                        user.name = jsonUser.getString("name");
+                        user.surname = jsonUser.getString("surname");
+                        //ottengo Date da stringa tramite formattazione ISO
+                        DateFormat format = new SimpleDateFormat("yyyy-dd-mm HH:mm", Locale.ITALIAN);
+                        Date date = format.parse(jsonUser.getString("dateRegistration"));
+                        user.dateRegistration = date;
+
+                        user.age = jsonUser.getInt("age");
+
+                        // aggiungo oggetto User popolato al dataset
+                        usersDataSet.add(user);
+                    }
+
+                    // ricarico adapter con nuovi contenuti
+                    renderDinamicList(usersDataSet);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
 
             }
 
@@ -82,6 +137,15 @@ public class ListFragment extends Fragment  {
         for(int index = 0; index < 20; index++) {
             users.add(new User());
         }
+
+        // istanzio adapter per gestire il bind tra dati e renderizzazione
+        UserAdapters userAdapters = new UserAdapters(getContext(), users);
+        // setto alla recycler view l'adpater da usare
+        recyclerView.setAdapter(userAdapters);
+
+    }
+
+    private void renderDinamicList(ArrayList<User> users) {
 
         // istanzio adapter per gestire il bind tra dati e renderizzazione
         UserAdapters userAdapters = new UserAdapters(getContext(), users);

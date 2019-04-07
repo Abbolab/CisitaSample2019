@@ -1,5 +1,7 @@
 package com.abbolab.cisitasample2019;
 
+import android.Manifest;
+import android.os.Debug;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,7 +9,7 @@ import android.util.Log;
 
 import com.abbolab.cisitasample2019.fragments.HomeFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     // TAG globale
     public static String K_TAG = "CISITA";
@@ -51,6 +53,4 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(K_TAG, "onDestroy MainActivity");
     }
-
-
 }
